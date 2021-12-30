@@ -49,7 +49,6 @@ do
         fi
         #Login
         LOGIN=`aws ecr get-login-password --region $REGION | docker login -u AWS --password-stdin $ACCOUNT.dkr.ecr.$REGION.amazonaws.com`
-        echo $LOGIN
         #Need to tag this image with the tag that points to ECR
         if [ "$LOGIN" = "Login Succeeded" ]; then
                 echo "Login Succeeded"
