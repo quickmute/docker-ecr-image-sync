@@ -14,6 +14,15 @@ IFS='
 #Set break flag (didn't end up using it)
 BREAKFLAG=0
 echo $REGION
+#Login
+LOGIN=`aws ecr get-login-password --region $REGION | docker login -u AWS --password-stdin $ACCOUNT.dkr.ecr.$REGION.amazonaws.com`
+if [ "$LOGIN" = "Login Succeeded" ]; then
+        echo "Login Succeeded"
+else
+        echo "Error during login"
+        BREAKFLAG=1
+        break
+fi
 #Iterate through all images
 for LINE in $OUTPUT
 do
@@ -46,16 +55,6 @@ do
                         BREAKFLAG=1
                         break
                 fi
-        fi
-        #Login
-        LOGIN=`aws ecr get-login-password --region $REGION | docker login -u AWS --password-stdin $ACCOUNT.dkr.ecr.$REGION.amazonaws.com`
-        #Need to tag this image with the tag that points to ECR
-        if [ "$LOGIN" = "Login Succeeded" ]; then
-                echo "Login Succeeded"
-        else
-                echo "Error during login"
-                BREAKFLAG=1
-                break
         fi
         #TAG it
         REPOTAG=`docker tag $NAME:$TAG $ACCOUNT.dkr.ecr.$REGION.amazonaws.com/$NAME:$TAG`
